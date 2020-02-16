@@ -17,8 +17,9 @@ public class AVLTree {
         this.root = root;
     }
 
-    void updateHeight(Node n) {
+    Node updateHeight(Node n) {
         n.setHeight(1 + Math.max(height(n.getLeft()), height(n.getRight())));
+        return n;
     }
 
     int height(Node n) {
@@ -35,7 +36,7 @@ public class AVLTree {
         x.setRight(y);
         y.setLeft(z);
         updateHeight(y);
-        updateHeight(x);
+        x = updateHeight(x);
         return x;
     }
 
@@ -45,12 +46,12 @@ public class AVLTree {
         x.setLeft(y);
         y.setRight(z);
         updateHeight(y);
-        updateHeight(x);
+        x = updateHeight(x);
         return x;
     }
 
     Node rebalance(Node z) {
-        updateHeight(z);
+        z = updateHeight(z);
         int balance = getBalance(z);
         if (balance > 1) {
             if (height(z.getRight().getRight()) > height(z.getRight().getLeft())) {
