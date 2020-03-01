@@ -1,6 +1,4 @@
-package com.cenfotec.Entities.Trees.Nodes;
-
-import com.cenfotec.Enums.BTreeNodeType;
+package bl;
 
 public class BPlusInnerNode<TKey extends Comparable<TKey>> extends BPlusNode<TKey> {
     protected final static int INNERORDER = 4;
@@ -11,7 +9,6 @@ public class BPlusInnerNode<TKey extends Comparable<TKey>> extends BPlusNode<TKe
         this.children = new Object[INNERORDER + 2];
     }
 
-    @SuppressWarnings("unchecked")
     public BPlusNode<TKey> getChild(int index) {
         return (BPlusNode<TKey>)this.children[index];
     }
@@ -43,11 +40,7 @@ public class BPlusInnerNode<TKey extends Comparable<TKey>> extends BPlusNode<TKe
         return index;
     }
 
-
-    /* The codes below are used to support insertion operation */
-
     private void insertAt(int index, TKey key, BPlusNode<TKey> leftChild, BPlusNode<TKey> rightChild) {
-        // move space for the new key
         for (int i = this.getKeyCount() + 1; i > index; --i) {
             this.setChild(i, this.getChild(i - 1));
         }
@@ -55,16 +48,12 @@ public class BPlusInnerNode<TKey extends Comparable<TKey>> extends BPlusNode<TKe
             this.setKey(i, this.getKey(i - 1));
         }
 
-        // insert the new key
         this.setKey(index, key);
         this.setChild(index, leftChild);
         this.setChild(index + 1, rightChild);
         this.keyCount += 1;
     }
 
-    /**
-     * When splits a internal node, the middle key is kicked out and be pushed to parent node.
-     */
     @Override
     protected BPlusNode<TKey> split() {
         int midIndex = this.getKeyCount() / 2;
@@ -88,13 +77,10 @@ public class BPlusInnerNode<TKey extends Comparable<TKey>> extends BPlusNode<TKe
 
     @Override
     protected BPlusNode<TKey> pushUpKey(TKey key, BPlusNode<TKey> leftChild, BPlusNode<TKey> rightNode) {
-        // find the target position of the new key
         int index = this.search(key);
 
-        // insert the new key
         this.insertAt(index, key, leftChild, rightNode);
 
-        // check whether current node need to be split
         if (this.isOverflow()) {
             return this.dealOverflow();
         }
@@ -102,11 +88,6 @@ public class BPlusInnerNode<TKey extends Comparable<TKey>> extends BPlusNode<TKe
             return this.getParent() == null ? this : null;
         }
     }
-
-
-
-
-    /* The codes below are used to support delete operation */
 
     private void deleteAt(int index) {
         int i = 0;
@@ -127,12 +108,10 @@ public class BPlusInnerNode<TKey extends Comparable<TKey>> extends BPlusNode<TKe
             ++borrowerChildIndex;
 
         if (borrowIndex == 0) {
-            // borrow a key from right sibling
             TKey upKey = borrower.transferFromSibling(this.getKey(borrowerChildIndex), lender, borrowIndex);
             this.setKey(borrowerChildIndex, upKey);
         }
         else {
-            // borrow a key from left sibling
             TKey upKey = borrower.transferFromSibling(this.getKey(borrowerChildIndex - 1), lender, borrowIndex);
             this.setKey(borrowerChildIndex - 1, upKey);
         }
@@ -145,16 +124,12 @@ public class BPlusInnerNode<TKey extends Comparable<TKey>> extends BPlusNode<TKe
             ++index;
         TKey sinkKey = this.getKey(index);
 
-        // merge two children and the sink key into the left child node
         leftChild.fusionWithSibling(sinkKey, rightChild);
 
-        // remove the sink key, keep the left child and abandon the right child
         this.deleteAt(index);
 
-        // check whether need to propagate borrow or fusion to parent
         if (this.isUnderflow()) {
             if (this.getParent() == null) {
-                // current node is root, only remove keys or delete the whole root node
                 if (this.getKeyCount() == 0) {
                     leftChild.setParent(null);
                     return leftChild;
@@ -197,7 +172,6 @@ public class BPlusInnerNode<TKey extends Comparable<TKey>> extends BPlusNode<TKe
 
         TKey upKey = null;
         if (borrowIndex == 0) {
-            // borrow the first key from right sibling, append it to tail
             int index = this.getKeyCount();
             this.setKey(index, sinkKey);
             this.setChild(index + 1, siblingNode.getChild(borrowIndex));
@@ -207,7 +181,6 @@ public class BPlusInnerNode<TKey extends Comparable<TKey>> extends BPlusNode<TKe
             siblingNode.deleteAt(borrowIndex);
         }
         else {
-            // borrow the last key from left sibling, insert it to head
             this.insertAt(0, sinkKey, siblingNode.getChild(borrowIndex + 1), this.getChild(0));
             upKey = siblingNode.getKey(borrowIndex);
             siblingNode.deleteAt(borrowIndex);

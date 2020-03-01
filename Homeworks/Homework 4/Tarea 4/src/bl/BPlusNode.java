@@ -1,7 +1,4 @@
-package com.cenfotec.Entities.Trees.Nodes;
-
-
-import com.cenfotec.Enums.BTreeNodeType;
+package bl;
 
 public abstract class BPlusNode<TKey extends Comparable<TKey>> {
     protected Object[] keys;
@@ -41,17 +38,7 @@ public abstract class BPlusNode<TKey extends Comparable<TKey>> {
 
     public abstract BTreeNodeType getNodeType();
 
-
-    /**
-     * Search a key on current node, if found the key then return its position,
-     * otherwise return -1 for a leaf node,
-     * return the child node index which should contain the key for a internal node.
-     */
     public abstract int search(TKey key);
-
-
-
-    /* The codes below are used to support insertion operation */
 
     public boolean isOverflow() {
         return this.getKeyCount() == this.keys.length;
@@ -68,22 +55,18 @@ public abstract class BPlusNode<TKey extends Comparable<TKey>> {
         }
         newRNode.setParent(this.getParent());
 
-        // maintain links of sibling nodes
         newRNode.setLeftSibling(this);
         newRNode.setRightSibling(this.rightSibling);
         if (this.getRightSibling() != null)
             this.getRightSibling().setLeftSibling(newRNode);
         this.setRightSibling(newRNode);
 
-        // push up a key to parent internal node
         return this.getParent().pushUpKey(upKey, this, newRNode);
     }
 
     protected abstract BPlusNode<TKey> split();
 
     protected abstract BPlusNode<TKey> pushUpKey(TKey key, BPlusNode<TKey> leftChild, BPlusNode<TKey> rightNode);
-
-    /* The codes below are used to support deletion operation */
 
     public boolean isUnderflow() {
         return this.getKeyCount() < (this.keys.length / 2);
@@ -117,7 +100,6 @@ public abstract class BPlusNode<TKey extends Comparable<TKey>> {
         if (this.getParent() == null)
             return null;
 
-        // try to borrow a key from sibling
         BPlusNode<TKey> leftSibling = this.getLeftSibling();
         if (leftSibling != null && leftSibling.canLendAKey()) {
             this.getParent().processChildrenTransfer(this, leftSibling, leftSibling.getKeyCount() - 1);
@@ -130,7 +112,6 @@ public abstract class BPlusNode<TKey extends Comparable<TKey>> {
             return null;
         }
 
-        // Can not borrow a key from any sibling, then do fusion with sibling
         if (leftSibling != null) {
             return this.getParent().processChildrenFusion(leftSibling, this);
         }

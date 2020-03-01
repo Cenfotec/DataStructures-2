@@ -1,6 +1,4 @@
-package com.cenfotec.Entities.Trees.Nodes;
-
-import com.cenfotec.Enums.BTreeNodeType;
+package bl;
 
 public class BPlusLeafNode<TKey extends Comparable<TKey>, TValue> extends BPlusNode<TKey> {
     protected final static int LEAFORDER = 4;
@@ -11,7 +9,6 @@ public class BPlusLeafNode<TKey extends Comparable<TKey>, TValue> extends BPlusN
         this.values = new Object[LEAFORDER + 1];
     }
 
-    @SuppressWarnings("unchecked")
     public TValue getValue(int index) {
         return (TValue)this.values[index];
     }
@@ -63,10 +60,6 @@ public class BPlusLeafNode<TKey extends Comparable<TKey>, TValue> extends BPlusN
         ++this.keyCount;
     }
 
-
-    /**
-     * When splits a leaf node, the middle key is kept on new node and be pushed to parent node.
-     */
     @Override
     protected BPlusNode<TKey> split() {
         int midIndex = this.getKeyCount() / 2;
@@ -88,11 +81,6 @@ public class BPlusLeafNode<TKey extends Comparable<TKey>, TValue> extends BPlusN
     protected BPlusNode<TKey> pushUpKey(TKey key, BPlusNode<TKey> leftChild, BPlusNode<TKey> rightNode) {
         throw new UnsupportedOperationException();
     }
-
-
-
-
-    /* The codes below are used to support deletion operation */
 
     public boolean delete(TKey key) {
         int index = this.search(key);
@@ -124,11 +112,7 @@ public class BPlusLeafNode<TKey extends Comparable<TKey>, TValue> extends BPlusN
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Notice that the key sunk from parent is be abandoned.
-     */
     @Override
-    @SuppressWarnings("unchecked")
     protected void fusionWithSibling(TKey sinkKey, BPlusNode<TKey> rightSibling) {
         BPlusLeafNode<TKey, TValue> siblingLeaf = (BPlusLeafNode<TKey, TValue>)rightSibling;
 
@@ -145,7 +129,6 @@ public class BPlusLeafNode<TKey extends Comparable<TKey>, TValue> extends BPlusN
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected TKey transferFromSibling(TKey sinkKey, BPlusNode<TKey> sibling, int borrowIndex) {
         BPlusLeafNode<TKey, TValue> siblingNode = (BPlusLeafNode<TKey, TValue>)sibling;
 
