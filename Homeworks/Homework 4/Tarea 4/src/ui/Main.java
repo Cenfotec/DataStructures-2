@@ -3,6 +3,7 @@ package ui;
 import bl.AVLTree;
 import bl.AVLTreeNode;
 import bl.BPlusTree;
+import tl.Controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,9 +13,7 @@ import java.io.PrintStream;
 public class Main {
     static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     static PrintStream out = System.out;
-
-    static AVLTree avlTree;
-    static BPlusTree bPlusTree;
+    static Controller controller = new Controller();
 
     public static void main(String[] args) throws IOException {
         menuPrincipal();
@@ -62,15 +61,15 @@ public class Main {
         }
 
         if (opcion.equals("2")) {
-            showPreOrder(avlTree);
+            showPreOrder();
         }
 
         if (opcion.equals("3")) {
-            showInOrder(avlTree);
+            showInOrder();
         }
 
         if (opcion.equals("4")) {
-            showPostOrder(avlTree);
+            showPostOrder();
         }
 
         if (opcion.equals("5")) {
@@ -93,8 +92,6 @@ public class Main {
     }
 
     public static void createAVLTree() throws IOException {
-        avlTree = new AVLTree();
-
         String input;
         while (true) {
             System.out.println("'exit' to quit.");
@@ -103,26 +100,23 @@ public class Main {
             if (input.equalsIgnoreCase("exit")) {
                 break;
             }
-            AVLTreeNode node = new AVLTreeNode(Integer.parseInt(input));
-            avlTree.setRoot(avlTree.insert(avlTree.getRoot(), node.getValue()));
+            controller.createAVLTree(input);
         }
     }
 
-    public static void showPreOrder(AVLTree avlTree) {
-        avlTree.showPreOrder(avlTree.getRoot());
+    public static void showPreOrder() {
+        controller.getAvlTree().showPreOrder(controller.getAvlTree().getRoot());
     }
 
-    public static void showInOrder(AVLTree avlTree) {
-        avlTree.showInOrder(avlTree.getRoot());
+    public static void showInOrder() {
+        controller.getAvlTree().showInOrder(controller.getAvlTree().getRoot());
     }
 
-    public static void showPostOrder(AVLTree avlTree) {
-        avlTree.showPostOrder(avlTree.getRoot());
+    public static void showPostOrder() {
+        controller.getAvlTree().showPostOrder(controller.getAvlTree().getRoot());
     }
 
     public static void createBPlusTree() throws IOException {
-        bPlusTree = new BPlusTree();
-
         String key;
         String value;
         while (true) {
@@ -135,7 +129,7 @@ public class Main {
             System.out.print("Digite un valor: ");
             value = br.readLine();
 
-            bPlusTree.insert(key, value);
+            controller.bPlusTreeInsert(key, value);
         }
     }
 
@@ -143,7 +137,7 @@ public class Main {
         System.out.print("Digite una llave para eliminar: ");
         String key = br.readLine();
         try {
-            bPlusTree.delete(key);
+            controller.bPlusTreeDelete(key);
             System.out.println("La llave " + key + " ha sido eliminada!");
         } catch (Exception e) {
             System.out.println("No se pudo eliminar la llave " + key);
@@ -153,6 +147,6 @@ public class Main {
     public static void searchBPlus() throws IOException {
         System.out.print("Digite una llave para buscar: ");
         String key = br.readLine();
-        System.out.println(bPlusTree.search(key));
+        System.out.println(controller.bPlusTreeSearch(key));
     }
 }
