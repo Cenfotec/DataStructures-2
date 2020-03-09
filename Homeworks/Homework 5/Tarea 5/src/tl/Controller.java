@@ -25,16 +25,11 @@ public class Controller {
     }
 
     public String[] getPeopleByLastname(String apellido) {
-        Map map = logic.getMap();
-        ArrayList<Integer> keyList = logic.getKeyList();
-        ArrayList<String> list = new ArrayList();
-        HashNode<Integer, Person> hashNode;
-        for (int i = 0; i < keyList.size(); i++) {
-            hashNode = (HashNode<Integer, Person>) map.get(1);
-            if (true) {
-            }
+        ArrayList peopleList = logic.getMap().findByLastname(logic.getKeyList(), apellido );
+        String[] peopleArr = new String[peopleList.size()];
+        for (int i = 0; i < peopleList.size(); i++) {
+            peopleArr[i] = peopleList.get(i).toString();
         }
-
-        return null;
+        return peopleArr;
     }
 }

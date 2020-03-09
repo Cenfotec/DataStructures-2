@@ -1,6 +1,9 @@
 package bl;
 
+import javax.naming.NoPermissionException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Map<K, V> {
     // bucketArray is used to store array of chains
@@ -36,8 +39,12 @@ public class Map<K, V> {
     // for a key
     private int getBucketIndex(K key) {
         int hashCode = key.hashCode();
-        int index = hashCode % numBuckets;
+        int index = hash(hashCode);
         return index;
+    }
+
+    private int hash(int hashCode) {
+        return hashCode % numBuckets;
     }
 
     // Method to remove a given key
@@ -132,5 +139,23 @@ public class Map<K, V> {
                 }
             }
         }
+    }
+
+    public ArrayList<V> findByLastname(ArrayList<Integer> keys, String apellido) {
+        ArrayList<V> peopleList = new ArrayList<>();
+        List<Integer> bucketIndexes = keys.stream().map(this::hash).collect(Collectors.toList());
+        bucketIndexes = bucketIndexes.stream().distinct().collect(Collectors.toList());
+
+        for (int i = 0; i < bucketIndexes.size(); i++) {
+            HashNode<K, V> hashNode = bucketArray.get(bucketIndexes.get(i));
+            do {
+                if (((Person) hashNode.getValue()).getLastname().equalsIgnoreCase(apellido)) {
+                    peopleList.add(hashNode.value);
+                }
+                hashNode = hashNode.next;
+            } while (hashNode != null);
+        }
+
+        return peopleList;
     }
 }

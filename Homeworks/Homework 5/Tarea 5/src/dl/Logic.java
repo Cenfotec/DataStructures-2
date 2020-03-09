@@ -11,6 +11,7 @@ public class Logic {
 
     public Logic() {
         this.map = new Map<>();
+        keyList = new ArrayList<>();
     }
 
     public void mapInsert(int key, Person person) {

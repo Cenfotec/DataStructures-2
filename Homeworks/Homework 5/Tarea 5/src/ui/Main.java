@@ -37,8 +37,9 @@ public class Main {
     public static void mostrarMenu() {
         out.println("\n----------------------------------------");
         out.println("1. [Open Hash] Create");
-        out.println("1. [Open Hash] Search");
-        out.println("8. Detener la aplicación");
+        out.println("2. [Open Hash] Search");
+        out.println("3. [Open Hash] Find by Lastname");
+        out.println("4. Detener la aplicación");
     }
 
     public static void detenerAplicacion() {
@@ -61,7 +62,7 @@ public class Main {
             getPeopleByLastname();
         }
 
-        if (opcion.equals("8")) {
+        if (opcion.equals("4")) {
             detenerAplicacion();
         }
 
@@ -94,8 +95,18 @@ public class Main {
     }
 
     public static void getPeopleByLastname() throws IOException {
-        System.out.println("Digite el apellido: ");
+        System.out.print("Digite el apellido: ");
         String apellido = br.readLine();
         String[] values = controller.getPeopleByLastname(apellido);
+        if (values.length == 0) {
+            out.println("No se encontró a nadie con el apellido: " + apellido);
+        } else {
+            String res = "";
+            for (int i = 0; i < values.length; i++) {
+                res += values[i] + "\n";
+            }
+            out.println(res.substring(0, res.length()-1));
+        }
+
     }
 }
